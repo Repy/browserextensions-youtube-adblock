@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "0.0.2",
   "author": "Repy",
   "description": "YT Ad Block",
@@ -13,31 +13,23 @@
     "38": "icon-48.png",
     "48": "icon-48.png",
     "120": "icon-120.png",
-    "128": "icon-chrome128.png"
+    "128": "icon-128.png"
   },
   "permissions": [
+    "declarativeNetRequest",
+    "scripting"
+  ],
+  "host_permissions": [
     "https://www.youtube.com/*",
     "https://music.youtube.com/*",
     "https://*.doubleclick.net/*",
-    "https://pagead2.googlesyndication.com/*",
-    "webRequest",
-    "webRequestBlocking",
-    "tabs"
+    "https://pagead2.googlesyndication.com/*"
   ],
-  "applications": {
-    "gecko": {
-      "id": "youtubeadblock@repy.info"
-    }
-  },
   "background": {
-    "scripts": [
-      "background.js"
-    ],
-    "persistent": true
+    "service_worker": "background.js"
   },
-  "browser_action": {
+  "action": {
     "default_title": "YT Ad Block",
-    "default_area": "menupanel",
     "default_icon": {
       "16": "icon-16.png",
       "19": "icon-24.png",
