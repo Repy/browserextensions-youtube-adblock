@@ -1,0 +1,65 @@
+name: master
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: "actions/checkout@v2"
+    - uses: "actions/setup-node@v2-beta"
+      with:
+        node-version: '14'
+    - name: "Build"
+      run: |
+        npm ci
+        npm run build
+    - name: "Dist Zip"
+      run: |
+        cd dist
+        zip -r ../dist *
+    # バージョン取得
+    - uses: "repy-actions/chrome-extensions-version@master"
+      id: "check_version"
+      with:
+        manifest-path: 'src/manifest.json'
+    # 同じバージョンのリリースがあるかチェック
+    - uses: "actions/github-script@v2"
+      id: "check_release"
+      continue-on-error: true
+      with:
+        github-token: "${{ secrets.GITHUB_TOKEN }}"
+        script: |
+          github.repos.getReleaseByTag({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            tag: "v${{ steps.check_version.outputs.version }}",
+          });
+    - name: "Create Release"
+      if: "steps.check_release.outcome == 'failure'" # 同じバージョンのリリースがないとき実行
+      id: "create_release"
+      uses: "actions/create-release@v1"
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      with:
+        tag_name: "v${{ steps.check_version.outputs.version }}"
+        release_name: "Version ${{ steps.check_version.outputs.version }}"
+        body: ""
+        draft: false
+        prerelease: false
+    - name: "Release Zip"
+      if: "steps.check_release.outcome == 'failure'" # 同じバージョンのリリースがないとき実行
+      uses: "actions/upload-release-asset@v1"
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      with:
+        upload_url: "${{ steps.create_release.outputs.upload_url }}"
+        asset_path: "./dist.zip"
+        asset_name: "dist.zip"
+        asset_content_type: "application/zip"

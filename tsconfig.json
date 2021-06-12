@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "strictNullChecks": true,
+    "target": "es5",
+    "module": "es6",
+    "lib": [
+      "es6",
+      "DOM"
+    ],
+    "sourceMap": true
+  },
+  "include": [
+    "./src"
+  ]
+}
