@@ -6,12 +6,16 @@ sc.innerHTML = `
 		JSON.parse = function(text, reviver) {
 			const res = window.ORIGJSONparse(text, reviver);
 			if (res.adPlacements) {
-				console.log("adblock!!");
+				console.log("adblock!! adPlacements");
 				res.adPlacements = undefined;
 			}
 			if (res.playerAds) {
-				console.log("adblock!!");
+				console.log("adblock!! playerAds");
 				res.playerAds = undefined;
+			}
+			if (res.adSlots) {
+				console.log("adblock!! adSlots");
+				res.adSlots = undefined;
 			}
 			return res;
 		};

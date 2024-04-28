@@ -13,7 +13,7 @@
     "38": "icon-48.png",
     "48": "icon-48.png",
     "120": "icon-120.png",
-    "128": "icon-chrome128.png"
+    "128": "icon-128.png"
   },
   "permissions": [
     "https://www.youtube.com/*",
