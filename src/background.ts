@@ -1,70 +1,49 @@
-import "./lib/WebExtensions";
-
-declare global {
-	interface Window {
-		YTBlock: YTBlock;
-	}
-}
 
 class YTBlock {
-	public constructor() {
-		this.isEnable = false;
-		this.enable();
+	public static async isEnable(): Promise<boolean> {
+		const list = await chrome.userScripts.getScripts({
+			ids: ['YTBlock'],
+		});
+		return list.length > 0;
 	}
-	public isEnable: boolean;
 
-	public toggle() {
-		if (this.isEnable) {
+	public static async toggle() {
+		if (await this.isEnable()) {
 			this.disable();
 		} else {
 			this.enable();
 		}
 	}
 
-	public handle(tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab): void {
-		if (tab.url?.startsWith("https://www.youtube.com/") || tab.url?.startsWith("https://music.youtube.com/")) {
-			browser.tabs.executeScript(tabId, {
-				file: "executeScript.js",
+	public static async disable() {
+		await chrome.userScripts.unregister({
+			ids: ['YTBlock'],
+		});
+		await chrome.action.setBadgeText({ text: "OFF" });
+	}
+
+	public static async enable() {
+		if (await this.isEnable()) {
+			await chrome.userScripts.unregister({
+				ids: ['YTBlock'],
 			});
 		}
-	}
-
-	public webRequestHandle(details: chrome.webRequest.WebRequestBodyDetails) {
-		return { cancel: true };
-	}
-
-	public disable() {
-		if (this.isEnable) {
-			browser.webRequest.onBeforeRequest.removeListener(this.webRequestHandle);
-			browser.tabs.onUpdated.removeListener(this.handle);
-			browser.browserAction.setBadgeText({ text: "OFF" });
-			this.isEnable = false;
-		}
-	}
-
-	public enable() {
-		if (!this.isEnable) {
-			browser.webRequest.onBeforeRequest.addListener(
-				this.webRequestHandle,
-				{
-					urls: [
-						"https://www.youtube.com/pagead/*",
-						"https://*.doubleclick.net/*",
-						"https://pagead2.googlesyndication.com/*",
-					],
-				},
-				["blocking"]
-			);
-			browser.tabs.onUpdated.addListener(this.handle);
-			browser.browserAction.setBadgeText({ text: "ON" });
-			this.isEnable = true;
-		}
+		await chrome.userScripts.register([{
+			id: 'YTBlock',
+			matches: ["*://*.youtube.com/*"],
+			js: [{ file: "executeScript.js" }],
+			world: "MAIN",
+		}]);
+		await chrome.action.setBadgeText({ text: "ON" });
 	}
 }
 
-window.YTBlock = new YTBlock();
-
-browser.browserAction.onClicked.addListener((tab: chrome.tabs.Tab) => {
-	window.YTBlock.toggle();
+chrome.runtime.onInstalled.addListener(() => {
+	YTBlock.enable();
 });
-
+chrome.runtime.onStartup.addListener(() => {
+	YTBlock.enable();
+});
+chrome.action.onClicked.addListener((tab: chrome.tabs.Tab) => {
+	YTBlock.toggle();
+});

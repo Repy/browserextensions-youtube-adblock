@@ -1,12 +1,9 @@
-import "./lib/WebExtensions";
 
-declare global {
-	interface Window {
-		ytab____orig_parse(text: string, reviver?: (this: any, key: string, value: any) => any): any;
-		ytab____wrapResponse(req: Response): Promise<Response>;
-		ytab____orig_fetch(input: RequestInfo | URL, init?: RequestInit | undefined): Promise<Response>;
-		ytInitialPlayerResponse: any;
-	}
+interface Window {
+	ytab____orig_parse(text: string, reviver?: (this: any, key: string, value: any) => any): any;
+	ytab____wrapResponse(req: Response): Promise<Response>;
+	ytab____orig_fetch(input: RequestInfo | URL, init?: RequestInit | undefined): Promise<Response>;
+	ytInitialPlayerResponse?: any;
 }
 
 if (!window.ytab____orig_parse) {
@@ -45,39 +42,10 @@ if (!window.ytab____orig_parse) {
 		}
 		return res;
 	};
-	// window.ytab____wrapResponse = function(body) {
-	// 	return body.text().then((text) => {
-	// 		try {
-	// 			return new Response(JSON.stringify(JSON.parse(text)), {
-	// 				status: body.status,
-	// 				statusText: body.statusText,
-	// 				headers: body.headers,
-	// 			});
-	// 		}
-	// 		catch (error) {
-	// 			return body;
-	// 		}
-	// 	});
-	// };
-	// window.ytab____orig_fetch = window.fetch;
-	// window.fetch = function(input, init) {
-	// 	var url = "";
-	// 	if (typeof input === "string") {
-	// 		url = input;
-	// 	}
-	// 	else if ("href" in input) {
-	// 		url = input.href;
-	// 	}
-	// 	else {
-	// 		url = input.url;
-	// 	}
-	// 	if (!url.includes("youtubei/v1/player")) {
-	// 		return window.ytab____orig_fetch(input, init);
-	// 	}
-	// 	return window.ytab____orig_fetch(input, init).then(window.ytab____wrapResponse);
-	// };
-	window.ytInitialPlayerResponse.adBreakHeartbeatParams = void 0;
-	window.ytInitialPlayerResponse.adPlacements = [];
-	window.ytInitialPlayerResponse.adSlots = [];
-	window.ytInitialPlayerResponse.playerAds = [];
+	if (window.ytInitialPlayerResponse) {
+		window.ytInitialPlayerResponse.adBreakHeartbeatParams = undefined;
+		window.ytInitialPlayerResponse.adPlacements = [];
+		window.ytInitialPlayerResponse.adSlots = [];
+		window.ytInitialPlayerResponse.playerAds = [];
+	}
 }

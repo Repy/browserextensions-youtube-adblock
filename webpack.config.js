@@ -6,6 +6,7 @@ module.exports = {
     devtool: "source-map",
     entry: {
         'background.js': './src/background.ts',
+        'executeScript.js': './src/executeScript.ts',
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
