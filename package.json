@@ -7,10 +7,7 @@
     "@types/chrome": "0.0.267",
     "typescript": "^5.4.5"
   },
-  "scripts": {
-    "ci": "npm ci",
-    "build": "webpack --config webpack.config.js"
-  },
+  "scripts": {},
   "author": "",
   "license": "MIT"
 }
