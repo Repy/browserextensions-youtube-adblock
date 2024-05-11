@@ -1,5 +1,5 @@
 [void][Reflection.Assembly]::LoadWithPartialName("System.Drawing")
-$image = New-Object System.Drawing.Bitmap("./src./icon.png")
+$image = New-Object System.Drawing.Bitmap("./src/icon.png")
 
 foreach ($size in @(16, 24, 48, 120, 128)) {
 	$canvas = New-Object System.Drawing.Bitmap($size, $size)
